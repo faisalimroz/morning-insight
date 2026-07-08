@@ -1,0 +1,24 @@
+{
+  "name": "auth-backend",
+  "version": "1.0.0",
+  "description": "Reusable OAuth authentication backend with JWT",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "keywords": ["auth", "oauth", "jwt", "express", "mongodb"],
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.9.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "google-auth-library": "^9.15.1",
+    "jsonwebtoken": "^9.0.2",
+    "jwks-rsa": "^3.2.0",
+    "mongoose": "^8.15.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
