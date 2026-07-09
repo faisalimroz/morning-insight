@@ -15,7 +15,6 @@ const findOrCreateUser = async (provider, profile, options = {}) => {
   const { providerId } = profile;
 
   let user = await User.findOne({ provider, providerId });
-
   if (!user) {
     user = await User.create({
       provider,
