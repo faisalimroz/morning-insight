@@ -1,6 +1,7 @@
 const express = require('express');
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
+const apiRoutes = require('./routes/api.routes');
 const errorHandler = require('./middlewares/error.middleware');
 
 const app = express();
@@ -13,6 +14,7 @@ app.get('/health', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api', apiRoutes);
 
 app.use(errorHandler);
 

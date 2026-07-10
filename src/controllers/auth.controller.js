@@ -78,10 +78,54 @@ const getMe = async (req, res) =>
     data: req.user,
   });
 
+const register = async (req, res) => {
+  const user = await authService.registerUser(req.body);
+  const token = jwtService.sign(user._id);
+
+  return sendSuccess(res, {
+    statusCode: 201,
+    message: 'Registered successfully',
+    token,
+    data: user,
+  });
+};
+
+const getProfile = async (req, res) => {
+  const user = await authService.getProfile(req.user.id);
+  return sendSuccess(res, {
+    message: 'Profile fetched successfully',
+    data: user,
+  });
+};
+
+const updateProfile = async (req, res) => {
+  const user = await authService.updateProfile(req.user.id, req.body);
+  return sendSuccess(res, {
+    message: 'Profile updated successfully',
+    data: user,
+  });
+};
+
+const updateInterests = async (req, res) => {
+  const { interests } = req.body;
+  if (!interests) {
+    throw new AppError('Interests array is required', 400);
+  }
+  const user = await authService.updateInterests(req.user.id, interests);
+  return sendSuccess(res, {
+    message: 'Interests updated successfully',
+    data: user,
+  });
+};
+
 module.exports = {
   googleLogin,
   appleLogin,
   kakaoLogin,
   naverLogin,
   getMe,
+  register,
+  getProfile,
+  updateProfile,
+  updateInterests,
 };

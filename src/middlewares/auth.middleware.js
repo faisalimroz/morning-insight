@@ -1,25 +1,26 @@
 const jwtService = require('../services/jwt.service');
-const userService = require('../services/user.service');
 const AppError = require('../utils/AppError');
-const asyncHandler = require('../utils/asyncHandler');
 
-const authenticate = asyncHandler(async (req, res, next) => {
+const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader?.startsWith('Bearer ')) {
-    throw new AppError('Unauthorized', 401);
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return next(new AppError('Unauthorized', 401));
   }
 
   const token = authHeader.split(' ')[1];
-  const decoded = jwtService.verify(token);
-  const user = await userService.getUserById(decoded.userId);
-
-  if (!user) {
-    throw new AppError('User not found', 401);
+  try {
+    const decoded = jwtService.verify(token);
+    if (!decoded || (!decoded.id && !decoded.userId)) {
+      return next(new AppError('Unauthorized', 401));
+    }
+    
+    // Append req.user = { id: decoded.id } as requested
+    req.user = { id: decoded.id || decoded.userId };
+    next();
+  } catch (err) {
+    return next(new AppError('Unauthorized', 401));
   }
-
-  req.user = user;
-  next();
-});
+};
 
 module.exports = authenticate;
