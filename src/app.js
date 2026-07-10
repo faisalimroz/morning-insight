@@ -12,9 +12,9 @@ app.get('/health', (req, res) => {
   res.json({ success: true, message: 'OK' });
 });
 
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api', apiRoutes);
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/users', userRoutes);
+app.use('/api/v1', apiRoutes);
 
 app.use(errorHandler);
 

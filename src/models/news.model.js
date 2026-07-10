@@ -9,7 +9,7 @@ const newsSchema = new mongoose.Schema(
     author: { type: String },
     createdAt: { type: Date, default: Date.now }
   },
-  { timestamps: { createdAt: false, updatedAt: true } } // Mongoose will add updatedAt and we explicitly handle createdAt or use default
+  { timestamps: { createdAt: false, updatedAt: true } } 
 );
 
 module.exports = mongoose.model('News', newsSchema);
