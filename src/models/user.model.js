@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema(
       },
       default: []
     },
-    provider: { type: String, default: 'local' },
+    provider: { type: String },
     providerId: { type: String }
   },
   { timestamps: true }

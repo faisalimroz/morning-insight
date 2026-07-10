@@ -34,8 +34,17 @@ const findOrCreateUser = async (provider, profile, options = {}) => {
 };
 
 const registerUser = async (payload) => {
-  const { name, email, password, picture, address } = payload;
-
+  // const { name, email, password, picture, address } = payload;
+const {
+  name,
+  email,
+  password,
+  picture,
+  address,
+  interests,
+  provider,
+  providerId
+} = payload;
   if (!name || !email || !password || !picture || !address) {
     throw new AppError('All fields (name, email, password, picture, address) are required', 400);
   }
@@ -58,7 +67,7 @@ const registerUser = async (payload) => {
     password: hashedPassword,
     picture,
     address,
-    provider: 'local',
+    provider,
   });
 
   return user;
