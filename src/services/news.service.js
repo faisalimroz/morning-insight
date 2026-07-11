@@ -20,7 +20,26 @@ const getPersonalizedFeed = async (userId) => {
   return News.find({ category: { $in: interests } }).sort({ createdAt: -1 });
 };
 
+const createNews = async (newsData) => {
+  const { title, content, category, image, author } = newsData;
+
+  if (!title || !content || !category) {
+    throw new AppError('Title, content, and category are required', 400);
+  }
+
+  const news = await News.create({
+    title,
+    content,
+    category,
+    image,
+    author,
+  });
+
+  return news;
+};
+
 module.exports = {
   getNews,
   getPersonalizedFeed,
+  createNews,
 };

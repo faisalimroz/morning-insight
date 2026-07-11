@@ -17,6 +17,7 @@ router.post('/profile/interests', authenticate, asyncHandler(authController.upda
 // News Routes
 router.get('/news', asyncHandler(newsController.getNews));
 router.get('/news/feed', authenticate, asyncHandler(newsController.getPersonalizedFeed));
+router.post('/news', authenticate, asyncHandler(newsController.createNews));
 
 // Bookmarks Routes
 router.post('/bookmarks', authenticate, asyncHandler(bookmarkController.addBookmark));

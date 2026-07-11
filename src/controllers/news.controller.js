@@ -18,7 +18,17 @@ const getPersonalizedFeed = async (req, res) => {
   });
 };
 
+const createNews = async (req, res) => {
+  const news = await newsService.createNews(req.body);
+  return sendSuccess(res, {
+    statusCode: 201,
+    message: 'News posted successfully',
+    data: news,
+  });
+};
+
 module.exports = {
   getNews,
   getPersonalizedFeed,
+  createNews,
 };
