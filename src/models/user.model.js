@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    password: { type: String }, // Optional to allow OAuth users, enforced in local registration service
+    password: { type: String, required: true },
     picture: { type: String },
     address: { type: String },
     interests: {
@@ -18,9 +18,19 @@ const userSchema = new mongoose.Schema(
       default: []
     },
     provider: { type: String },
-    providerId: { type: String }
+    providerId: { type: String },
+    url: { type: String, default: '' },
+    origin: { type: String, default: '' },
+    role: {
+      type: String,
+      enum: ['user', 'admin'],
+      default: 'user',
+    },
   },
   { timestamps: true }
 );
+
+userSchema.index({ role: 1 });
+userSchema.index({ origin: 1 });
 
 module.exports = mongoose.model('User', userSchema);

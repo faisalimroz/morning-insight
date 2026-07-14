@@ -3,6 +3,7 @@ const authController = require('../controllers/auth.controller');
 const newsController = require('../controllers/news.controller');
 const bookmarkController = require('../controllers/bookmark.controller');
 const inspirationController = require('../controllers/inspiration.controller');
+const insightController = require('../controllers/insight.controller');
 const authenticate = require('../middlewares/auth.middleware');
 const asyncHandler = require('../utils/asyncHandler');
 
@@ -15,9 +16,14 @@ router.put('/profile', authenticate, asyncHandler(authController.updateProfile))
 router.post('/profile/interests', authenticate, asyncHandler(authController.updateInterests));
 
 // News Routes
-router.get('/news', asyncHandler(newsController.getNews));
+router.get('/news',authenticate, asyncHandler(newsController.getNews));
 router.get('/news/feed', authenticate, asyncHandler(newsController.getPersonalizedFeed));
-router.post('/news', authenticate, asyncHandler(newsController.createNews));
+router.get('/news/:id', authenticate, asyncHandler(newsController.getNewsById));
+// router.post('/news', authenticate, asyncHandler(newsController.createNews));
+
+// Insight Routes (News collection)
+router.get('/insight/categories/count',authenticate, asyncHandler(insightController.getInsightCategoryCounts));
+router.get('/insight', authenticate, asyncHandler(insightController.getInsights));
 
 // Bookmarks Routes
 router.post('/bookmarks', authenticate, asyncHandler(bookmarkController.addBookmark));

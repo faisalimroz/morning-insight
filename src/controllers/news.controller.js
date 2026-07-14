@@ -2,8 +2,23 @@ const newsService = require('../services/news.service');
 const { sendSuccess } = require('../utils/response');
 
 const getNews = async (req, res) => {
-  const { category } = req.query;
-  const news = await newsService.getNews(category);
+  const { page, limit, category, insightCategory, date, search } = req.query;
+  const result = await newsService.getNews({
+    page,
+    limit,
+    category,
+    insightCategory,
+    date,
+    search,
+  });
+  return sendSuccess(res, {
+    message: 'News fetched successfully',
+    data: result,
+  });
+};
+
+const getNewsById = async (req, res) => {
+  const news = await newsService.getNewsById(req.params.id, true);
   return sendSuccess(res, {
     message: 'News fetched successfully',
     data: news,
@@ -29,6 +44,7 @@ const createNews = async (req, res) => {
 
 module.exports = {
   getNews,
+  getNewsById,
   getPersonalizedFeed,
   createNews,
 };
