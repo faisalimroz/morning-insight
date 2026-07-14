@@ -21,8 +21,9 @@ const getDailyInspiration = async (userId) => {
     throw new AppError('User not found', 404);
   }
 
-  const location = user.address || 'London';
+  const location = user.address;
   const locKey = location.toLowerCase().trim();
+  console.log(`Fetching daily inspiration for user ${userId} at location: ${location} (${locKey}) `);  
   const now = Date.now();
 
   // 1. Resolve quote

@@ -22,7 +22,7 @@ const registerAdmin = async (payload) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-
+// name: String(name).trim(),
   const user = await User.create({
     name: String(name).trim(),
     email: normalizedEmail,

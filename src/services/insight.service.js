@@ -40,11 +40,29 @@ const getInsights = async (filters = {}) => {
 
   return buildPaginatedResult(items, total, page, limit);
 };
+const getInsightCategoryCounts = async () => {
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
 
-const getInsightCategoryCounts = async () =>
-  News.aggregate([
-    { $match: { insightCategory: { $exists: true, $ne: '' } } },
-    { $group: { _id: '$insightCategory', count: { $sum: 1 } } },
+  const endOfDay = new Date();
+  endOfDay.setHours(23, 59, 59, 999);
+
+  return News.aggregate([
+    {
+      $match: {
+        insightCategory: { $exists: true, $ne: '' },
+        createdAt: {
+          $gte: startOfDay,
+          $lte: endOfDay,
+        },
+      },
+    },
+    {
+      $group: {
+        _id: '$insightCategory',
+        count: { $sum: 1 },
+      },
+    },
     { $sort: { count: -1 } },
     {
       $project: {
@@ -54,6 +72,20 @@ const getInsightCategoryCounts = async () =>
       },
     },
   ]);
+};
+// const getInsightCategoryCounts = async () =>
+//   News.aggregate([
+//     { $match: { insightCategory: { $exists: true, $ne: '' } } },
+//     { $group: { _id: '$insightCategory', count: { $sum: 1 } } },
+//     { $sort: { count: -1 } },
+//     {
+//       $project: {
+//         _id: 0,
+//         insightCategory: '$_id',
+//         count: 1,
+//       },
+//     },
+//   ]);
 
 const createInsight = async (data) => {
   validateRequiredString(data.insightCategory, 'Insight category');
