@@ -1,6 +1,7 @@
-const User = require('../models/user.model');
+const Admin = require('../models/admin.model');
 const bcrypt = require('bcrypt');
 const AppError = require('../utils/AppError');
+const { blacklistToken } = require('./token.service');
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -16,21 +17,20 @@ const registerAdmin = async (payload) => {
   }
 
   const normalizedEmail = email.toLowerCase().trim();
-  const existingUser = await User.findOne({ email: normalizedEmail });
-  if (existingUser) {
+  const existingAdmin = await Admin.findOne({ email: normalizedEmail });
+  if (existingAdmin) {
     throw new AppError('Email already exists', 409);
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-// name: String(name).trim(),
-  const user = await User.create({
+
+  const admin = await Admin.create({
     name: String(name).trim(),
     email: normalizedEmail,
     password: hashedPassword,
-    role: 'admin',
   });
 
-  return User.findById(user._id).select('-password');
+  return Admin.findById(admin._id).select('-password');
 };
 
 const loginAdmin = async (payload) => {
@@ -40,24 +40,25 @@ const loginAdmin = async (payload) => {
     throw new AppError('Email and password are required', 400);
   }
 
-  const user = await User.findOne({ email: email.toLowerCase().trim() });
-  if (!user || user.role !== 'admin') {
+  const admin = await Admin.findOne({ email: email.toLowerCase().trim() });
+  if (!admin) {
     throw new AppError('Invalid credentials', 401);
   }
 
-  if (!user.password) {
-    throw new AppError('Invalid credentials', 401);
-  }
-
-  const isMatch = await bcrypt.compare(password, user.password);
+  const isMatch = await bcrypt.compare(password, admin.password);
   if (!isMatch) {
     throw new AppError('Invalid credentials', 401);
   }
 
-  return User.findById(user._id).select('-password');
+  return Admin.findById(admin._id).select('-password');
+};
+
+const logoutAdmin = async (token) => {
+  await blacklistToken(token);
 };
 
 module.exports = {
   registerAdmin,
   loginAdmin,
+  logoutAdmin,
 };

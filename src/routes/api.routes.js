@@ -1,5 +1,4 @@
 const express = require('express');
-const authController = require('../controllers/auth.controller');
 const newsController = require('../controllers/news.controller');
 const bookmarkController = require('../controllers/bookmark.controller');
 const inspirationController = require('../controllers/inspiration.controller');
@@ -9,20 +8,13 @@ const asyncHandler = require('../utils/asyncHandler');
 
 const router = express.Router();
 
-// Auth & Profile Routes
-router.post('/auth/register', asyncHandler(authController.register));
-router.get('/profile', authenticate, asyncHandler(authController.getProfile));
-router.put('/profile', authenticate, asyncHandler(authController.updateProfile));
-router.post('/profile/interests', authenticate, asyncHandler(authController.updateInterests));
-
 // News Routes
-router.get('/news',authenticate, asyncHandler(newsController.getNews));
+router.get('/news', authenticate, asyncHandler(newsController.getNews));
 router.get('/news/feed', authenticate, asyncHandler(newsController.getPersonalizedFeed));
 router.get('/news/:id', authenticate, asyncHandler(newsController.getNewsById));
-// router.post('/news', authenticate, asyncHandler(newsController.createNews));
 
 // Insight Routes (News collection)
-router.get('/insight/categories/count',authenticate, asyncHandler(insightController.getInsightCategoryCounts));
+router.get('/insight/categories/count', authenticate, asyncHandler(insightController.getInsightCategoryCounts));
 router.get('/insight', authenticate, asyncHandler(insightController.getInsights));
 
 // Bookmarks Routes

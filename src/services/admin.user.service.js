@@ -48,6 +48,7 @@ const getUserById = async (id) => {
   validateObjectId(id, 'user ID');
 
   const user = await User.findById(id).select('-password');
+  console.log(user)
   if (!user) {
     throw new AppError('User not found', 404);
   }

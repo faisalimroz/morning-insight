@@ -99,14 +99,39 @@ const getNewsById = async (id, incrementViews = false) => {
 
 const getPersonalizedFeed = async (userId) => {
   const User = require('../models/user.model');
+
   const user = await User.findById(userId);
+
   if (!user) {
     throw new AppError('User not found', 404);
   }
 
   const interests = user.interests || [];
-  return News.find({ category: { $in: interests } }).sort({ createdAt: -1 });
+
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
+  const startOfTomorrow = new Date(startOfToday);
+  startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
+
+  return News.find({
+    category: { $in: interests },
+    createdAt: {
+      $gte: startOfToday,
+      $lt: startOfTomorrow,
+    },
+  }).sort({ createdAt: -1 });
 };
+// const getPersonalizedFeed = async (userId) => {
+//   const User = require('../models/user.model');
+//   const user = await User.findById(userId);
+//   if (!user) {
+//     throw new AppError('User not found', 404);
+//   }
+
+//   const interests = user.interests || [];
+//   return News.find({ category: { $in: interests } }).sort({ createdAt: -1 });
+// };
 
 const validateNewsFields = (data, { requireAll = true } = {}) => {
   const title = data.title !== undefined ? validateRequiredString(data.title, 'Title') : undefined;

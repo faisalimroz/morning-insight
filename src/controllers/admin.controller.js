@@ -1,33 +1,8 @@
-const adminAuthService = require('../services/admin.auth.service');
 const newsService = require('../services/news.service');
 const insightService = require('../services/insight.service');
 const adminBookmarkService = require('../services/admin.bookmark.service');
 const adminUserService = require('../services/admin.user.service');
-const jwtService = require('../services/jwt.service');
 const { sendSuccess } = require('../utils/response');
-
-const register = async (req, res) => {
-  const user = await adminAuthService.registerAdmin(req.body);
-  const token = jwtService.sign(user._id);
-
-  return sendSuccess(res, {
-    statusCode: 201,
-    message: 'Admin registered successfully',
-    token,
-    data: user,
-  });
-};
-
-const login = async (req, res) => {
-  const user = await adminAuthService.loginAdmin(req.body);
-  const token = jwtService.sign(user._id);
-
-  return sendSuccess(res, {
-    message: 'Admin logged in successfully',
-    token,
-    data: user,
-  });
-};
 
 const createNews = async (req, res) => {
   const news = await newsService.createNews(req.body);
@@ -97,6 +72,14 @@ const getInsights = async (req, res) => {
   return sendSuccess(res, {
     message: 'Insights fetched successfully',
     data: result,
+  });
+};
+
+const getInsightCategoryCounts = async (req, res) => {
+  const counts = await insightService.getInsightCategoryCounts();
+  return sendSuccess(res, {
+    message: 'Insight category counts fetched successfully',
+    data: counts,
   });
 };
 
@@ -208,8 +191,6 @@ const deleteUser = async (req, res) => {
 };
 
 module.exports = {
-  register,
-  login,
   createNews,
   getNews,
   getNewsById,
@@ -218,6 +199,7 @@ module.exports = {
   createInsight,
   getInsights,
   getInsightById,
+  getInsightCategoryCounts,
   updateInsight,
   deleteInsight,
   createBookmark,

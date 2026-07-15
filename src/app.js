@@ -3,6 +3,7 @@ const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const apiRoutes = require('./routes/api.routes');
 const adminRoutes = require('./routes/admin.routes');
+const adminAuthRoutes = require('./routes/admin.auth.routes');
 const errorHandler = require('./middlewares/error.middleware');
 
 const app = express();
@@ -15,6 +16,7 @@ app.get('/health', (req, res) => {
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/admin/auth', adminAuthRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1', apiRoutes);
 

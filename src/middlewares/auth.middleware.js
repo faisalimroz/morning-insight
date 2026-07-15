@@ -1,7 +1,8 @@
 const jwtService = require('../services/jwt.service');
+const { isTokenBlacklisted } = require('../services/token.service');
 const AppError = require('../utils/AppError');
 
-const authenticate = (req, res, next) => {
+const authenticate = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -9,14 +10,22 @@ const authenticate = (req, res, next) => {
   }
 
   const token = authHeader.split(' ')[1];
+
   try {
+    if (await isTokenBlacklisted(token)) {
+      return next(new AppError('Unauthorized', 401));
+    }
+
     const decoded = jwtService.verify(token);
     if (!decoded || (!decoded.id && !decoded.userId)) {
       return next(new AppError('Unauthorized', 401));
     }
-    
-    // Append req.user = { id: decoded.id } as requested
-    req.user = { id: decoded.id || decoded.userId };
+
+    if (decoded.type === 'admin') {
+      return next(new AppError('Unauthorized', 401));
+    }
+
+    req.user = { id: decoded.id || decoded.userId, type: decoded.type || 'user' };
     next();
   } catch (err) {
     return next(new AppError('Unauthorized', 401));

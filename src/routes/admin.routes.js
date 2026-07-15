@@ -5,10 +5,6 @@ const asyncHandler = require('../utils/asyncHandler');
 
 const router = express.Router();
 
-// Admin auth (public)
-router.post('/register', asyncHandler(adminController.register));
-router.post('/login', asyncHandler(adminController.login));
-
 // Admin news CRUD
 router.post('/news', adminAuthenticate, asyncHandler(adminController.createNews));
 router.get('/news', adminAuthenticate, asyncHandler(adminController.getNews));
@@ -22,6 +18,7 @@ router.get('/insight', adminAuthenticate, asyncHandler(adminController.getInsigh
 router.get('/insight/:id', adminAuthenticate, asyncHandler(adminController.getInsightById));
 router.put('/insight/:id', adminAuthenticate, asyncHandler(adminController.updateInsight));
 router.delete('/insight/:id', adminAuthenticate, asyncHandler(adminController.deleteInsight));
+router.get('/insight/categories/count', adminAuthenticate, asyncHandler(adminController.getInsightCategoryCounts));
 
 // Admin bookmark CRUD
 router.post('/bookmarks', adminAuthenticate, asyncHandler(adminController.createBookmark));
