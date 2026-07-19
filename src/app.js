@@ -6,7 +6,8 @@ const adminRoutes = require('./routes/admin.routes');
 const adminAuthRoutes = require('./routes/admin.auth.routes');
 const errorHandler = require('./middlewares/error.middleware');
 const swaggerUi = require('swagger-ui-express'); 
-const specs = require('../../morning-insight/src/swagger');
+// const specs = require('../../morning-insight/src/swagger');
+const specs = require('./swagger');
 const app = express();
 
 app.use(express.json());
