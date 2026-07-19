@@ -22,7 +22,7 @@ const buildTextSearch = (search, fields) => {
   return { $or: fields.map((field) => ({ [field]: regex })) };
 };
 
-const buildDateFilter = (dateStr) => {
+const buildDateFilter = (dateStr, field = 'date') => {
   if (!dateStr) {
     return {};
   }
@@ -34,7 +34,65 @@ const buildDateFilter = (dateStr) => {
   start.setUTCHours(0, 0, 0, 0);
   const end = new Date(date);
   end.setUTCHours(23, 59, 59, 999);
-  return { createdAt: { $gte: start, $lte: end } };
+  return { [field]: { $gte: start, $lte: end } };
+};
+
+const buildDateRangeFilter = (dateFrom, dateTo, field = 'date') => {
+  const filter = {};
+
+  if (dateFrom) {
+    const start = new Date(dateFrom);
+    if (Number.isNaN(start.getTime())) {
+      throw new AppError('Invalid dateFrom format. Use YYYY-MM-DD', 400);
+    }
+    start.setUTCHours(0, 0, 0, 0);
+    filter.$gte = start;
+  }
+
+  if (dateTo) {
+    const end = new Date(dateTo);
+    if (Number.isNaN(end.getTime())) {
+      throw new AppError('Invalid dateTo format. Use YYYY-MM-DD', 400);
+    }
+    end.setUTCHours(23, 59, 59, 999);
+    filter.$lte = end;
+  }
+
+  if (Object.keys(filter).length === 0) return {};
+  return { [field]: filter };
+};
+
+const buildContentQuery = (filters = {}, searchFields = ['title', 'content', 'description']) => {
+  const {
+    country,
+    category,
+    insightCategory,
+    source,
+    date,
+    dateFrom,
+    dateTo,
+    search,
+  } = filters;
+
+  const query = {};
+
+  if (country) query.country = String(country).trim();
+  if (category) query.category = String(category).trim();
+  if (insightCategory) query.insightCategory = String(insightCategory).trim();
+  if (source) query.source = String(source).trim();
+
+  if (date) {
+    Object.assign(query, buildDateFilter(date, 'date'));
+  } else if (dateFrom || dateTo) {
+    Object.assign(query, buildDateRangeFilter(dateFrom, dateTo, 'date'));
+  }
+
+  if (search) {
+    const textSearch = buildTextSearch(search, searchFields);
+    if (textSearch) Object.assign(query, textSearch);
+  }
+
+  return query;
 };
 
 const buildPaginatedResult = (items, total, page, limit) => ({
@@ -70,6 +128,8 @@ module.exports = {
   parsePagination,
   buildTextSearch,
   buildDateFilter,
+  buildDateRangeFilter,
+  buildContentQuery,
   buildPaginatedResult,
   mergeFilters,
   validateRequiredString,

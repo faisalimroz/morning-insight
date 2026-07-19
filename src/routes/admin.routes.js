@@ -12,6 +12,27 @@ router.get('/news/:id', adminAuthenticate, asyncHandler(adminController.getNewsB
 router.put('/news/:id', adminAuthenticate, asyncHandler(adminController.updateNews));
 router.delete('/news/:id', adminAuthenticate, asyncHandler(adminController.deleteNews));
 
+// Admin trending news CRUD
+router.post('/trending-news', adminAuthenticate, asyncHandler(adminController.createTrendingNews));
+router.get('/trending-news', adminAuthenticate, asyncHandler(adminController.getTrendingNews));
+router.get('/trending-news/:id', adminAuthenticate, asyncHandler(adminController.getTrendingNewsById));
+router.put('/trending-news/:id', adminAuthenticate, asyncHandler(adminController.updateTrendingNews));
+router.delete('/trending-news/:id', adminAuthenticate, asyncHandler(adminController.deleteTrendingNews));
+
+// Admin breaking news CRUD
+router.post('/breaking-news', adminAuthenticate, asyncHandler(adminController.createBreakingNews));
+router.get('/breaking-news', adminAuthenticate, asyncHandler(adminController.getBreakingNews));
+router.get('/breaking-news/:id', adminAuthenticate, asyncHandler(adminController.getBreakingNewsById));
+router.put('/breaking-news/:id', adminAuthenticate, asyncHandler(adminController.updateBreakingNews));
+router.delete('/breaking-news/:id', adminAuthenticate, asyncHandler(adminController.deleteBreakingNews));
+
+// Admin tender CRUD
+router.post('/tenders', adminAuthenticate, asyncHandler(adminController.createTender));
+router.get('/tenders', adminAuthenticate, asyncHandler(adminController.getTenders));
+router.get('/tenders/:id', adminAuthenticate, asyncHandler(adminController.getTenderById));
+router.put('/tenders/:id', adminAuthenticate, asyncHandler(adminController.updateTender));
+router.delete('/tenders/:id', adminAuthenticate, asyncHandler(adminController.deleteTender));
+
 // Admin insight CRUD (News collection)
 router.post('/insight', adminAuthenticate, asyncHandler(adminController.createInsight));
 router.get('/insight', adminAuthenticate, asyncHandler(adminController.getInsights));

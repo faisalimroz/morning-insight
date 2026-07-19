@@ -1,5 +1,9 @@
 const express = require('express');
 const newsController = require('../controllers/news.controller');
+const trendingNewsController = require('../controllers/trendingNews.controller');
+const breakingNewsController = require('../controllers/breakingNews.controller');
+const tenderController = require('../controllers/tender.controller');
+const currencyController = require('../controllers/currency.controller');
 const bookmarkController = require('../controllers/bookmark.controller');
 const inspirationController = require('../controllers/inspiration.controller');
 const insightController = require('../controllers/insight.controller');
@@ -12,6 +16,21 @@ const router = express.Router();
 router.get('/news', authenticate, asyncHandler(newsController.getNews));
 router.get('/news/feed', authenticate, asyncHandler(newsController.getPersonalizedFeed));
 router.get('/news/:id', authenticate, asyncHandler(newsController.getNewsById));
+
+// Trending News Routes
+router.get('/trending-news', authenticate, asyncHandler(trendingNewsController.getTrendingNews));
+router.get('/trending-news/:id', authenticate, asyncHandler(trendingNewsController.getTrendingNewsById));
+
+// Breaking News Routes
+router.get('/breaking-news', authenticate, asyncHandler(breakingNewsController.getBreakingNews));
+router.get('/breaking-news/:id', authenticate, asyncHandler(breakingNewsController.getBreakingNewsById));
+
+// Tender Routes
+router.get('/tenders', authenticate, asyncHandler(tenderController.getTenders));
+router.get('/tenders/:id', authenticate, asyncHandler(tenderController.getTenderById));
+
+// Currency Route
+router.get('/currency/daily-rate', asyncHandler(currencyController.getDailyRate));
 
 // Insight Routes (News collection)
 router.get('/insight/categories/count', authenticate, asyncHandler(insightController.getInsightCategoryCounts));

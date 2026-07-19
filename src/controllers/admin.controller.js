@@ -1,8 +1,12 @@
 const newsService = require('../services/news.service');
 const insightService = require('../services/insight.service');
+const trendingNewsService = require('../services/trendingNews.service');
+const breakingNewsService = require('../services/breakingNews.service');
+const tenderService = require('../services/tender.service');
 const adminBookmarkService = require('../services/admin.bookmark.service');
 const adminUserService = require('../services/admin.user.service');
 const { sendSuccess } = require('../utils/response');
+const { listQuerySchema, validate } = require('../validators/contentItem.validator');
 
 const createNews = async (req, res) => {
   const news = await newsService.createNews(req.body);
@@ -14,15 +18,8 @@ const createNews = async (req, res) => {
 };
 
 const getNews = async (req, res) => {
-  const { search, category, insightCategory, date, page, limit } = req.query;
-  const result = await newsService.getNews({
-    search,
-    category,
-    insightCategory,
-    date,
-    page,
-    limit,
-  });
+  const filters = validate(listQuerySchema, req.query);
+  const result = await newsService.getNews(filters);
   return sendSuccess(res, {
     message: 'News fetched successfully',
     data: result,
@@ -49,6 +46,132 @@ const deleteNews = async (req, res) => {
   await newsService.deleteNews(req.params.id);
   return sendSuccess(res, {
     message: 'News deleted successfully',
+  });
+};
+
+// Trending News CRUD
+const createTrendingNews = async (req, res) => {
+  const item = await trendingNewsService.createTrendingNews(req.body);
+  return sendSuccess(res, {
+    statusCode: 201,
+    message: 'Trending news created successfully',
+    data: item,
+  });
+};
+
+const getTrendingNews = async (req, res) => {
+  const filters = validate(listQuerySchema, req.query);
+  const result = await trendingNewsService.getTrendingNews(filters);
+  return sendSuccess(res, {
+    message: 'Trending news fetched successfully',
+    data: result,
+  });
+};
+
+const getTrendingNewsById = async (req, res) => {
+  const item = await trendingNewsService.getTrendingNewsById(req.params.id);
+  return sendSuccess(res, {
+    message: 'Trending news fetched successfully',
+    data: item,
+  });
+};
+
+const updateTrendingNews = async (req, res) => {
+  const item = await trendingNewsService.updateTrendingNews(req.params.id, req.body);
+  return sendSuccess(res, {
+    message: 'Trending news updated successfully',
+    data: item,
+  });
+};
+
+const deleteTrendingNews = async (req, res) => {
+  await trendingNewsService.deleteTrendingNews(req.params.id);
+  return sendSuccess(res, {
+    message: 'Trending news deleted successfully',
+  });
+};
+
+// Breaking News CRUD
+const createBreakingNews = async (req, res) => {
+  const item = await breakingNewsService.createBreakingNews(req.body);
+  return sendSuccess(res, {
+    statusCode: 201,
+    message: 'Breaking news created successfully',
+    data: item,
+  });
+};
+
+const getBreakingNews = async (req, res) => {
+  const filters = validate(listQuerySchema, req.query);
+  const result = await breakingNewsService.getBreakingNews(filters);
+  return sendSuccess(res, {
+    message: 'Breaking news fetched successfully',
+    data: result,
+  });
+};
+
+const getBreakingNewsById = async (req, res) => {
+  const item = await breakingNewsService.getBreakingNewsById(req.params.id);
+  return sendSuccess(res, {
+    message: 'Breaking news fetched successfully',
+    data: item,
+  });
+};
+
+const updateBreakingNews = async (req, res) => {
+  const item = await breakingNewsService.updateBreakingNews(req.params.id, req.body);
+  return sendSuccess(res, {
+    message: 'Breaking news updated successfully',
+    data: item,
+  });
+};
+
+const deleteBreakingNews = async (req, res) => {
+  await breakingNewsService.deleteBreakingNews(req.params.id);
+  return sendSuccess(res, {
+    message: 'Breaking news deleted successfully',
+  });
+};
+
+// Tender CRUD
+const createTender = async (req, res) => {
+  const item = await tenderService.createTender(req.body);
+  return sendSuccess(res, {
+    statusCode: 201,
+    message: 'Tender created successfully',
+    data: item,
+  });
+};
+
+const getTenders = async (req, res) => {
+  const filters = validate(listQuerySchema, req.query);
+  const result = await tenderService.getTenders(filters);
+  return sendSuccess(res, {
+    message: 'Tenders fetched successfully',
+    data: result,
+  });
+};
+
+const getTenderById = async (req, res) => {
+  const item = await tenderService.getTenderById(req.params.id);
+  return sendSuccess(res, {
+    message: 'Tender fetched successfully',
+    data: item,
+  });
+};
+
+const updateTender = async (req, res) => {
+  const item = await tenderService.updateTender(req.params.id, req.body);
+  return sendSuccess(res, {
+    message: 'Tender updated successfully',
+    data: item,
+  });
+};
+
+const deleteTender = async (req, res) => {
+  await tenderService.deleteTender(req.params.id);
+  return sendSuccess(res, {
+    message: 'Tender deleted successfully',
   });
 };
 
@@ -196,6 +319,21 @@ module.exports = {
   getNewsById,
   updateNews,
   deleteNews,
+  createTrendingNews,
+  getTrendingNews,
+  getTrendingNewsById,
+  updateTrendingNews,
+  deleteTrendingNews,
+  createBreakingNews,
+  getBreakingNews,
+  getBreakingNewsById,
+  updateBreakingNews,
+  deleteBreakingNews,
+  createTender,
+  getTenders,
+  getTenderById,
+  updateTender,
+  deleteTender,
   createInsight,
   getInsights,
   getInsightById,
