@@ -53,6 +53,7 @@ const findOrCreateUser = async (provider, profile, options = {}) => {
   await user.save();
   return user;
 };
+const crypto = require('crypto');
 
 const registerUser = async (payload) => {
   const {
@@ -61,43 +62,161 @@ const registerUser = async (payload) => {
     password,
     picture,
     address,
-    provider = null,
-    providerId = null,
+    provider,
+    providerId,
     url = '',
     origin = '',
   } = payload;
 
   if (!name || !email || !password) {
-    throw new AppError('Name, email, and password are required', 400);
+    throw new AppError(
+      'Name, email, and password are required',
+      400
+    );
   }
 
-  if (!EMAIL_REGEX.test(email)) {
+  const normalizedEmail = email.toLowerCase().trim();
+
+  if (!EMAIL_REGEX.test(normalizedEmail)) {
     throw new AppError('Invalid email format', 400);
   }
 
-  const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
+  const existingUser = await User.findOne({
+    email: normalizedEmail,
+  });
+
   if (existingUser) {
-    throw new AppError('Email already exists', 400);
+    throw new AppError('Email already exists', 409);
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const user = await User.create({
-    name,
-    email: email.toLowerCase().trim(),
-    password: hashedPassword,
-    picture: picture || undefined,
-    address: address || undefined,
-    interests: [],
-    provider,
-    providerId,
-    url,
-    origin,
-    role: 'user',
+  const normalizedProvider =
+    typeof provider === 'string' && provider.trim()
+      ? provider.trim().toLowerCase()
+      : 'local';
+
+  let normalizedProviderId =
+    typeof providerId === 'string'
+      ? providerId.trim()
+      : '';
+
+  /*
+   * When provider/providerId are missing or empty,
+   * create a unique ID for the local account.
+   */
+  if (
+    normalizedProvider === 'local' &&
+    !normalizedProviderId
+  ) {
+    normalizedProviderId = `local-${crypto.randomUUID()}`;
+  }
+
+  /*
+   * OAuth providers must provide their actual provider ID.
+   */
+  if (
+    normalizedProvider !== 'local' &&
+    !normalizedProviderId
+  ) {
+    throw new AppError(
+      `Provider ID is required for ${normalizedProvider} login`,
+      400
+    );
+  }
+
+  const existingProviderAccount = await User.findOne({
+    provider: normalizedProvider,
+    providerId: normalizedProviderId,
   });
 
-  return User.findById(user._id).select('-password');
+  if (existingProviderAccount) {
+    throw new AppError(
+      'This provider account is already registered',
+      409
+    );
+  }
+
+  try {
+    const user = await User.create({
+      name: name.trim(),
+      email: normalizedEmail,
+      password: hashedPassword,
+      picture: picture || undefined,
+      address: address || undefined,
+      interests: [],
+      provider: normalizedProvider,
+      providerId: normalizedProviderId,
+      url: url || '',
+      origin: origin || '',
+      role: 'user',
+    });
+
+    return await User.findById(user._id).select('-password');
+  } catch (error) {
+    if (error?.code === 11000) {
+      if (error?.keyPattern?.email) {
+        throw new AppError('Email already exists', 409);
+      }
+
+      if (
+        error?.keyPattern?.provider &&
+        error?.keyPattern?.providerId
+      ) {
+        throw new AppError(
+          'This provider account is already registered',
+          409
+        );
+      }
+    }
+
+    throw error;
+  }
 };
+// const registerUser = async (payload) => {
+//   const {
+//     name,
+//     email,
+//     password,
+//     picture,
+//     address,
+//     provider = null,
+//     providerId = null,
+//     url = '',
+//     origin = '',
+//   } = payload;
+
+//   if (!name || !email || !password) {
+//     throw new AppError('Name, email, and password are required', 400);
+//   }
+
+//   if (!EMAIL_REGEX.test(email)) {
+//     throw new AppError('Invalid email format', 400);
+//   }
+
+//   const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
+//   if (existingUser) {
+//     throw new AppError('Email already exists', 400);
+//   }
+
+//   const hashedPassword = await bcrypt.hash(password, 10);
+
+//   const user = await User.create({
+//     name,
+//     email: email.toLowerCase().trim(),
+//     password: hashedPassword,
+//     picture: picture || undefined,
+//     address: address || undefined,
+//     interests: [],
+//     provider,
+//     providerId,
+//     url,
+//     origin,
+//     role: 'user',
+//   });
+
+//   return User.findById(user._id).select('-password');
+// };
 
 const loginUser = async (payload) => {
   const { email, password, interests } = payload;
