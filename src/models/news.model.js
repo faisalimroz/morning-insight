@@ -4,5 +4,5 @@ const { createContentItemSchema } = require('./schemas/contentItem.schema');
 // const newsSchema = createContentItemSchema({
 //   defaultCountry: process.env.DEFAULT_COUNTRY || 'Bangladesh',
 // });
-const trendingNewsSchema = createContentItemSchema();
+const newsSchema = createContentItemSchema();
 module.exports = mongoose.model('News', newsSchema);
