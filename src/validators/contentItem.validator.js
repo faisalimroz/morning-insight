@@ -1,8 +1,8 @@
 const Joi = require('joi');
 const AppError = require('../utils/AppError');
 
-const countrySchema = Joi.string().trim().valid('Global', 'Bangladesh').default('Bangladesh');
-
+// const countrySchema = Joi.string().trim().valid('Global', 'Bangladesh').default('Bangladesh');
+const countrySchema = Joi.string().trim().required();
 const createContentSchema = Joi.object({
   title: Joi.string().trim().required(),
   description: Joi.string().trim().allow('', null),
