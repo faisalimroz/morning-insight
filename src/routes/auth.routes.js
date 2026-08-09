@@ -14,6 +14,8 @@ const router = express.Router();
  */
 router.post('/register', asyncHandler(authController.register));
 
+ router.patch('/reset-password/:token', authController.resetPassword);
+router.post('/forgot-password', authController.forgotPassword);
 /**
  * @openapi
  * /auth/login:
