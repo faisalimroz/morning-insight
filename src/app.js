@@ -13,7 +13,7 @@ const cors = require('cors');
 app.use(cors({
   origin: [
     'http://localhost:5173',                 // Local frontend
-    'https://your-frontend-domain.com'       // Production frontend (if any)
+    'https://admin-morning-insight.vercel.app'       // Production frontend (if any)
   ],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
