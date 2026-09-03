@@ -413,7 +413,6 @@ const findOrCreateUser = async (provider, profile, options = {}) => {
   await user.save();
   return user;
 };
-
 const registerUser = async (payload) => {
   const {
     name,
@@ -421,6 +420,7 @@ const registerUser = async (payload) => {
     password,
     picture,
     address,
+    interests = [],          // ← Add this
     provider,
     providerId,
     url = '',
@@ -432,13 +432,11 @@ const registerUser = async (payload) => {
   }
 
   const normalizedEmail = email.toLowerCase().trim();
-
   if (!EMAIL_REGEX.test(normalizedEmail)) {
     throw new AppError('Invalid email format', 400);
   }
 
   const existingUser = await User.findOne({ email: normalizedEmail });
-
   if (existingUser) {
     throw new AppError('Email already exists', 409);
   }
@@ -480,7 +478,7 @@ const registerUser = async (payload) => {
       password: hashedPassword,
       picture: picture || undefined,
       address: address || undefined,
-      interests: [],
+      interests: Array.isArray(interests) ? interests : [],  // ← Fixed here
       provider: normalizedProvider,
       providerId: normalizedProviderId,
       url: url || '',
@@ -501,6 +499,93 @@ const registerUser = async (payload) => {
     throw error;
   }
 };
+// const registerUser = async (payload) => {
+//   const {
+//     name,
+//     email,
+//     password,
+//     picture,
+//     address,
+//     provider,
+//     providerId,
+//     url = '',
+//     origin = '',
+//   } = payload;
+
+//   if (!name || !email || !password) {
+//     throw new AppError('Name, email, and password are required', 400);
+//   }
+
+//   const normalizedEmail = email.toLowerCase().trim();
+
+//   if (!EMAIL_REGEX.test(normalizedEmail)) {
+//     throw new AppError('Invalid email format', 400);
+//   }
+
+//   const existingUser = await User.findOne({ email: normalizedEmail });
+
+//   if (existingUser) {
+//     throw new AppError('Email already exists', 409);
+//   }
+
+//   const hashedPassword = await bcrypt.hash(password, 10);
+
+//   const normalizedProvider =
+//     typeof provider === 'string' && provider.trim()
+//       ? provider.trim().toLowerCase()
+//       : 'local';
+
+//   let normalizedProviderId =
+//     typeof providerId === 'string' ? providerId.trim() : '';
+
+//   if (normalizedProvider === 'local' && !normalizedProviderId) {
+//     normalizedProviderId = `local-${crypto.randomUUID()}`;
+//   }
+
+//   if (normalizedProvider !== 'local' && !normalizedProviderId) {
+//     throw new AppError(
+//       `Provider ID is required for ${normalizedProvider} login`,
+//       400
+//     );
+//   }
+
+//   const existingProviderAccount = await User.findOne({
+//     provider: normalizedProvider,
+//     providerId: normalizedProviderId,
+//   });
+
+//   if (existingProviderAccount) {
+//     throw new AppError('This provider account is already registered', 409);
+//   }
+
+//   try {
+//     const user = await User.create({
+//       name: name.trim(),
+//       email: normalizedEmail,
+//       password: hashedPassword,
+//       picture: picture || undefined,
+//       address: address || undefined,
+//       interests: [],
+//       provider: normalizedProvider,
+//       providerId: normalizedProviderId,
+//       url: url || '',
+//       origin: origin || '',
+//       role: 'user',
+//     });
+
+//     return await User.findById(user._id).select('-password');
+//   } catch (error) {
+//     if (error?.code === 11000) {
+//       if (error?.keyPattern?.email) {
+//         throw new AppError('Email already exists', 409);
+//       }
+//       if (error?.keyPattern?.provider && error?.keyPattern?.providerId) {
+//         throw new AppError('This provider account is already registered', 409);
+//       }
+//     }
+//     throw error;
+//   }
+// };
 
 const loginUser = async (payload) => {
   const { email, password, interests } = payload;
