@@ -42,7 +42,7 @@ router.get('/news', adminAuthenticate, asyncHandler(adminController.getNews));
 router.get('/news/:id', adminAuthenticate, asyncHandler(adminController.getNewsById));
 router.put('/news/:id', adminAuthenticate, asyncHandler(adminController.updateNews));
 router.delete('/news/:id', adminAuthenticate, asyncHandler(adminController.deleteNews));
-
+router.get('/news/categories/count', adminAuthenticate, asyncHandler(adminController.getCategoryCounts));
 /**
  * @openapi
  * /api/admin/trending-news:

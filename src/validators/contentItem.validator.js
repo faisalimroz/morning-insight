@@ -2,15 +2,15 @@ const Joi = require('joi');
 const AppError = require('../utils/AppError');
 
 // const countrySchema = Joi.string().trim().valid('Global', 'Bangladesh').default('Bangladesh');
-const countrySchema = Joi.string().trim().required();
+// const countrySchema = Joi.string().trim().required();
+ const countrySchema = Joi.string().trim();
 const createContentSchema = Joi.object({
-  title: Joi.string().trim().required(),
-  description: Joi.string().trim().allow('', null),
-  content: Joi.string().trim().required(),
+  merged_article: Joi.string().trim(),
+  canonical_title: Joi.string().trim().allow('', null),
+  content: Joi.string().trim(),
   date: Joi.date().iso().optional(),
   source: Joi.string().trim().allow('', null),
   category: Joi.string().trim().required(),
-  insightCategory: Joi.string().trim().required(),
   keywords: Joi.array().items(Joi.string().trim()).optional(),
   image: Joi.string().trim().allow('', null),
   author: Joi.string().trim().allow('', null),
@@ -18,7 +18,7 @@ const createContentSchema = Joi.object({
 });
 
 const updateContentSchema = createContentSchema.fork(
-  ['title', 'content', 'category', 'insightCategory'],
+  ['canonical_title', 'merged_article', 'category'],
   (schema) => schema.optional(),
 );
 
@@ -27,7 +27,6 @@ const listQuerySchema = Joi.object({
   limit: Joi.number().integer().min(1).max(100),
   country: Joi.string().trim(),
   category: Joi.string().trim(),
-  insightCategory: Joi.string().trim(),
   source: Joi.string().trim(),
   date: Joi.string().pattern(/^\d{4}-\d{2}-\d{2}$/),
   dateFrom: Joi.string().pattern(/^\d{4}-\d{2}-\d{2}$/),

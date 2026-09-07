@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+   const mongoose = require('mongoose');
 
 /**
  * Shared schema for News, TrendingNews, BreakingNews, and Tender collections.
@@ -42,6 +42,9 @@ const createContentItemSchema = () => {
   const schema = new mongoose.Schema(
     {
       title: { type: String, required: true, trim: true },
+      canonical_title: { type: String, trim: true },
+      merged_article: { type: String, trim: true },
+      summary: { type: String, trim: true },
       description: { type: String, trim: true },
       content: { type: String, required: true },
       date: { type: Date, default: Date.now, index: true },

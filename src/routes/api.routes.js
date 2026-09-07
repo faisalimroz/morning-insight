@@ -32,6 +32,7 @@ router.get('/news', authenticate, asyncHandler(newsController.getNews));
  *     security: [{ bearerAuth: [] }]
  */
 router.get('/news/feed', authenticate, asyncHandler(newsController.getPersonalizedFeed));
+router.get('/news/categories/count', authenticate, asyncHandler(newsController.getCategoryCounts));
 
 /**
  * @openapi

@@ -26,6 +26,14 @@ const getNews = async (req, res) => {
   });
 };
 
+const getCategoryCounts = async (req, res) => {
+  const result = await newsService.getCategoryCounts();
+  return sendSuccess(res, {
+    message: 'Category counts fetched successfully',
+    data: result,
+  });
+};
+
 const getNewsById = async (req, res) => {
   const news = await newsService.getNewsById(req.params.id);
   return sendSuccess(res, {
@@ -319,6 +327,7 @@ module.exports = {
   getNewsById,
   updateNews,
   deleteNews,
+  getCategoryCounts,
   createTrendingNews,
   getTrendingNews,
   getTrendingNewsById,
