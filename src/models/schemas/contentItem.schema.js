@@ -55,6 +55,9 @@ const createContentItemSchema = () => {
       image: { type: String },
       author: { type: String, trim: true },
       views: { type: Number, default: 0 },
+    is_breaking: { type: Boolean, default: false },
+    is_tender: { type: Boolean, default: false },
+      is_trending: { type: Boolean, default: false },
       country: {
         type: String,
         required: true,
