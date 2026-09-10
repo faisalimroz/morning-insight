@@ -68,11 +68,10 @@ const createTrendingNews = async (req, res) => {
 };
 
 const getTrendingNews = async (req, res) => {
-  const filters = validate(listQuerySchema, req.query);
-  
-  // Enforce the is_trending: true filter along with any query filters
-  const result = await trendingNewsService.getNews({ ...filters, is_trending: true });
-  
+ const filters = validate(listQuerySchema, req.query);
+
+  const result = await News.find({ ...filters, is_trending: true }).sort({ createdAt: -1 });
+
   return sendSuccess(res, {
     message: 'Trending news fetched successfully',
     data: result,
@@ -92,18 +91,20 @@ const getTrendingNewsById = async (req, res) => {
     data: item,
   });
 };
+
+
 const updateTrendingNews = async (req, res) => {
-  const item = await trendingNewsService.updateTrendingNews(req.params.id, req.body);
+  const news = await newsService.updateNews(req.params.id, req.body);
   return sendSuccess(res, {
-    message: 'Trending news updated successfully',
-    data: item,
+    message: 'Trending News updated successfully',
+    data: news,
   });
 };
 
 const deleteTrendingNews = async (req, res) => {
-  await trendingNewsService.deleteTrendingNews(req.params.id);
+ await newsService.deleteNews(req.params.id);
   return sendSuccess(res, {
-    message: 'Trending news deleted successfully',
+    message: 'News deleted successfully',
   });
 };
 
@@ -142,17 +143,17 @@ const getBreakingNewsById = async (req, res) => {
 };
 
 const updateBreakingNews = async (req, res) => {
-  const item = await breakingNewsService.updateBreakingNews(req.params.id, req.body);
+  const news = await newsService.updateNews(req.params.id, req.body);
   return sendSuccess(res, {
     message: 'Breaking news updated successfully',
-    data: item,
+    data: news,
   });
 };
 
 const deleteBreakingNews = async (req, res) => {
-  await breakingNewsService.deleteBreakingNews(req.params.id);
+  await newsService.deleteNews(req.params.id);
   return sendSuccess(res, {
-    message: 'Breaking news deleted successfully',
+    message: 'News deleted successfully',
   });
 };
 
@@ -193,17 +194,17 @@ const getTenderById = async (req, res) => {
 
 
 const updateTender = async (req, res) => {
-  const item = await tenderService.updateTender(req.params.id, req.body);
+  const news = await newsService.updateNews(req.params.id, req.body);
   return sendSuccess(res, {
-    message: 'Tender updated successfully',
-    data: item,
+    message: 'News updated successfully',
+    data: news,
   });
 };
 
 const deleteTender = async (req, res) => {
-  await tenderService.deleteTender(req.params.id);
+  await newsService.deleteNews(req.params.id);
   return sendSuccess(res, {
-    message: 'Tender deleted successfully',
+    message: 'News deleted successfully',
   });
 };
 
