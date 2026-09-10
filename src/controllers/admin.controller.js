@@ -1,8 +1,8 @@
 const newsService = require('../services/news.service');
 const insightService = require('../services/insight.service');
-const trendingNewsService = require('../services/trendingNews.service');
-const breakingNewsService = require('../services/breakingNews.service');
-const tenderService = require('../services/tender.service');
+const trendingNewsService = require('../services/news.service');
+const breakingNewsService = require('../services/news.service');
+const tenderService = require('../services/news.service');
 const adminBookmarkService = require('../services/admin.bookmark.service');
 const adminUserService = require('../services/admin.user.service');
 const { sendSuccess } = require('../utils/response');
@@ -69,7 +69,10 @@ const createTrendingNews = async (req, res) => {
 
 const getTrendingNews = async (req, res) => {
   const filters = validate(listQuerySchema, req.query);
-  const result = await trendingNewsService.getTrendingNews(filters);
+  
+  // Enforce the is_trending: true filter along with any query filters
+  const result = await trendingNewsService.getNews({ ...filters, is_trending: true });
+  
   return sendSuccess(res, {
     message: 'Trending news fetched successfully',
     data: result,
@@ -77,13 +80,18 @@ const getTrendingNews = async (req, res) => {
 };
 
 const getTrendingNewsById = async (req, res) => {
-  const item = await trendingNewsService.getTrendingNewsById(req.params.id);
+  const item = await trendingNewsService.getNewsById(req.params.id);
+  
+  // Optional safety check to ensure the fetched item is a trending news
+  if (item && !item.is_trending) {
+    return res.status(404).json({ success: false, message: 'Trending news not found' });
+  }
+
   return sendSuccess(res, {
     message: 'Trending news fetched successfully',
     data: item,
   });
 };
-
 const updateTrendingNews = async (req, res) => {
   const item = await trendingNewsService.updateTrendingNews(req.params.id, req.body);
   return sendSuccess(res, {
@@ -109,9 +117,13 @@ const createBreakingNews = async (req, res) => {
   });
 };
 
+
 const getBreakingNews = async (req, res) => {
   const filters = validate(listQuerySchema, req.query);
-  const result = await breakingNewsService.getBreakingNews(filters);
+  
+  // Enforce the is_breaking: true filter alongside query parameters
+  const result = await breakingNewsService.getBreakingNews({ ...filters, is_breaking: true });
+  
   return sendSuccess(res, {
     message: 'Breaking news fetched successfully',
     data: result,
@@ -120,10 +132,21 @@ const getBreakingNews = async (req, res) => {
 
 const getBreakingNewsById = async (req, res) => {
   const item = await breakingNewsService.getBreakingNewsById(req.params.id);
+  
+  // Optional safety check to verify it is breaking news
+  if (item && !item.is_breaking) {
+    return res.status(404).json({ success: false, message: 'Breaking news not found' });
+  }
+
   return sendSuccess(res, {
     message: 'Breaking news fetched successfully',
     data: item,
   });
+};
+
+module.exports = {
+  getBreakingNews,
+  getBreakingNewsById,
 };
 
 const updateBreakingNews = async (req, res) => {
@@ -153,7 +176,10 @@ const createTender = async (req, res) => {
 
 const getTenders = async (req, res) => {
   const filters = validate(listQuerySchema, req.query);
-  const result = await tenderService.getTenders(filters);
+  
+  // Enforce the is_tender: true filter alongside query parameters
+  const result = await tenderService.getTenders({ ...filters, is_tender: true });
+  
   return sendSuccess(res, {
     message: 'Tenders fetched successfully',
     data: result,
@@ -162,10 +188,21 @@ const getTenders = async (req, res) => {
 
 const getTenderById = async (req, res) => {
   const item = await tenderService.getTenderById(req.params.id);
+  
+  // Optional safety check to verify the item is a tender
+  if (item && !item.is_tender) {
+    return res.status(404).json({ success: false, message: 'Tender not found' });
+  }
+
   return sendSuccess(res, {
     message: 'Tender fetched successfully',
     data: item,
   });
+};
+
+module.exports = {
+  getTenders,
+  getTenderById,
 };
 
 const updateTender = async (req, res) => {
