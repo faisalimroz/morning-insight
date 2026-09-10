@@ -1,13 +1,13 @@
 const newsService = require('../services/news.service');
 const insightService = require('../services/insight.service');
-const trendingNewsService = require('../services/news.service');
-const breakingNewsService = require('../services/news.service');
-const tenderService = require('../services/news.service');
+const trendingNewsService = require('../services/trendingNews.service');
+const breakingNewsService = require('../services/breakingNews.service');
+const tenderService = require('../services/tender.service');
 const adminBookmarkService = require('../services/admin.bookmark.service');
 const adminUserService = require('../services/admin.user.service');
 const { sendSuccess } = require('../utils/response');
 const { listQuerySchema, validate } = require('../validators/contentItem.validator');
-
+const News = require('../models/news.model');
 const createNews = async (req, res) => {
   const news = await newsService.createNews(req.body);
   return sendSuccess(res, {
@@ -117,13 +117,11 @@ const createBreakingNews = async (req, res) => {
   });
 };
 
-
 const getBreakingNews = async (req, res) => {
   const filters = validate(listQuerySchema, req.query);
-  
-  // Enforce the is_breaking: true filter alongside query parameters
-  const result = await breakingNewsService.getBreakingNews({ ...filters, is_breaking: true });
-  
+
+  const result = await News.find({ ...filters, is_breaking: true }).sort({ createdAt: -1 });
+
   return sendSuccess(res, {
     message: 'Breaking news fetched successfully',
     data: result,
@@ -131,10 +129,9 @@ const getBreakingNews = async (req, res) => {
 };
 
 const getBreakingNewsById = async (req, res) => {
-  const item = await breakingNewsService.getBreakingNewsById(req.params.id);
-  
-  // Optional safety check to verify it is breaking news
-  if (item && !item.is_breaking) {
+  const item = await News.findOne({ _id: req.params.id, is_breaking: true });
+
+  if (!item) {
     return res.status(404).json({ success: false, message: 'Breaking news not found' });
   }
 
@@ -142,11 +139,6 @@ const getBreakingNewsById = async (req, res) => {
     message: 'Breaking news fetched successfully',
     data: item,
   });
-};
-
-module.exports = {
-  getBreakingNews,
-  getBreakingNewsById,
 };
 
 const updateBreakingNews = async (req, res) => {
@@ -177,8 +169,8 @@ const createTender = async (req, res) => {
 const getTenders = async (req, res) => {
   const filters = validate(listQuerySchema, req.query);
   
-  // Enforce the is_tender: true filter alongside query parameters
-  const result = await tenderService.getTenders({ ...filters, is_tender: true });
+  // Directly query the News model ensuring is_tender is strictly enforced
+  const result = await News.find({ ...filters, is_tender: true }).sort({ createdAt: -1 });
   
   return sendSuccess(res, {
     message: 'Tenders fetched successfully',
@@ -187,10 +179,9 @@ const getTenders = async (req, res) => {
 };
 
 const getTenderById = async (req, res) => {
-  const item = await tenderService.getTenderById(req.params.id);
+  const item = await News.findOne({ _id: req.params.id, is_tender: true });
   
-  // Optional safety check to verify the item is a tender
-  if (item && !item.is_tender) {
+  if (!item) {
     return res.status(404).json({ success: false, message: 'Tender not found' });
   }
 
@@ -200,10 +191,6 @@ const getTenderById = async (req, res) => {
   });
 };
 
-module.exports = {
-  getTenders,
-  getTenderById,
-};
 
 const updateTender = async (req, res) => {
   const item = await tenderService.updateTender(req.params.id, req.body);

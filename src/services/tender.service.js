@@ -1,4 +1,4 @@
-const Tender = require('../models/tender.model');
+const Tender = require('../models/news.model');
 const { createContentService } = require('./contentItem.service');
 
 const service = createContentService(Tender, 'Tender');

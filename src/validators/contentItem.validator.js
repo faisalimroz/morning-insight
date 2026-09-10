@@ -14,6 +14,9 @@ const createContentSchema = Joi.object({
   keywords: Joi.array().items(Joi.string().trim()).optional(),
   image: Joi.string().trim().allow('', null),
   author: Joi.string().trim().allow('', null),
+  is_breaking: Joi.boolean().optional(),
+  is_tender: Joi.boolean().optional(),
+  is_trending: Joi.boolean().optional(),
   country: countrySchema,
 });
 
@@ -32,6 +35,9 @@ const listQuerySchema = Joi.object({
   dateFrom: Joi.string().pattern(/^\d{4}-\d{2}-\d{2}$/),
   dateTo: Joi.string().pattern(/^\d{4}-\d{2}-\d{2}$/),
   search: Joi.string().trim().allow(''),
+  is_breaking: Joi.boolean().optional(),
+  is_tender: Joi.boolean().optional(),
+  is_trending: Joi.boolean().optional(),
 });
 
 const validate = (schema, data) => {

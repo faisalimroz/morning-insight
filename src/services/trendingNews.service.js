@@ -1,4 +1,4 @@
-const TrendingNews = require('../models/trendingNews.model');
+const TrendingNews = require('../models/news.model');
 const { createContentService } = require('./contentItem.service');
 
 const service = createContentService(TrendingNews, 'Trending news');
